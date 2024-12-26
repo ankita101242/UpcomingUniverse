@@ -5,11 +5,31 @@ pipeline {
     }
 
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
         stage('Checkout') {
             steps {
                 script {
                     git branch: 'main', url: "${GITHUB_REPO_URL}"
                 }
+            }
+        }
+
+        stage('Debug Checkout') {
+            steps {
+                script {
+                    sh 'ls -l ./backend'
+                }
+            }
+        }
+
+        stage('Check Maven') {
+            steps {
+                sh "${tool 'mvn'}/bin/mvn -version"
             }
         }
 
@@ -19,7 +39,7 @@ pipeline {
             }
             steps {
                 dir('./backend') {
-                    sh "${MVN_HOME}/bin/mvn clean install"
+                    sh "${MVN_HOME}/bin/mvn -f pom.xml clean install"
                 }
             }
         }
@@ -72,4 +92,3 @@ pipeline {
         }
     }
 }
-
