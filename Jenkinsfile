@@ -1,40 +1,27 @@
 pipeline {
     agent any
+
     environment {
+        DOCKER_IMAGE = "ankitaagrawal12/frontend:latest"
+        BACKEND_IMAGE = "ankitaagrawal12/backend:latest"
+        KUBECONFIG_CREDENTIALS_ID = "kubeconfig-credentials-id" 
         GITHUB_REPO_URL = 'https://github.com/ankita101242/UpcomingUniverse.git'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                script {
-                    git branch: 'main', url: "${GITHUB_REPO_URL}"
-                }
-            }
-        }
-
-        stage('Maven Build') {
-            environment {
-                MVN_HOME = tool 'mvn'
-            }
-            steps {
-                dir('./backend') {
-                    sh "${MVN_HOME}/bin/mvn clean install"
-                }
+                echo 'Checking out code...'
+                checkout scm
             }
         }
 
         stage('Build Docker Images') {
             steps {
+                echo 'Building Docker images...'
                 script {
-                    dir('./backend') {
-                        docker.build("ankitaagrawal12/backend:latest", '.')
-                    }
-                    dir('./frontend') {
-                        sh 'npm install'
-                        sh 'npm run build'
-                        docker.build("ankitaagrawal12/frontend:latest", '.')
-                    }
+                    sh 'docker build -t $DOCKER_IMAGE ./frontend'
+                    sh 'docker build -t $BACKEND_IMAGE ./backend'
                 }
             }
         }
@@ -58,17 +45,23 @@ pipeline {
                 }
             }
         }
+
+        stage('Open Minikube Dashboard') {
+            steps {
+                echo 'Opening Minikube dashboard...'
+                script {
+                    sh 'minikube dashboard &'
+                }
+            }
+        }
     }
 
     post {
-        always {
-            echo 'Pipeline finished.'
-        }
         success {
-            echo 'Pipeline succeeded!'
+            echo 'Pipeline executed successfully!'
         }
         failure {
-            echo 'Pipeline failed!'
+            echo 'Pipeline failed! Please check the logs.'
         }
     }
 }
