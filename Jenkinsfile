@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        GITHUB_REPO_URL = 'https://github.com/ankita101242/UpcomingUniverse_k8.git'
+        GITHUB_REPO_URL = 'https://github.com/ankita101242/UpcomingUniverse.git'
     }
 
     stages {
