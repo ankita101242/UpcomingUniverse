@@ -5,26 +5,11 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 script {
                     git branch: 'main', url: "${GITHUB_REPO_URL}"
                 }
-            }
-        }
-
-        stage('Debug Checkout') {
-            steps {
-                script {
-                    sh 'ls -l ./backend'
-                }
-            }
-        }
-
-        stage('Check Maven') {
-            steps {
-                sh "${tool 'mvn'}/bin/mvn -version"
             }
         }
 
@@ -34,7 +19,7 @@ pipeline {
             }
             steps {
                 dir('./backend') {
-                    sh "${MVN_HOME}/bin/mvn -f pom.xml clean install"
+                    sh "${MVN_HOME}/bin/mvn clean install"
                 }
             }
         }
@@ -45,7 +30,7 @@ pipeline {
                     dir('./backend') {
                         docker.build("ankitaagrawal12/backend:latest", '.')
                     }
-                    dir('./FRONTEND') {
+                    dir('./frontend') {
                         sh 'npm install'
                         sh 'npm run build'
                         docker.build("ankitaagrawal12/frontend:latest", '.')
