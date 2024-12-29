@@ -3,19 +3,16 @@ pipeline {
     environment {
         GITHUB_REPO_URL = 'https://github.com/ankita101242/UpcomingUniverse.git'
     }
-
     stages {
         stage('Checkout') {
             steps {
-                script {
-                    git branch: 'main', url: GITHUB_REPO_URL
-                }
+                git branch: 'main', url: GITHUB_REPO_URL
             }
         }
         
         stage('Build and Deploy') {
             steps {
-                script {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                     sh 'kubectl apply -f frontend/frontend-deployment.yaml'
                     sh 'kubectl apply -f backend/backend-deployment.yaml'
                 }
@@ -24,14 +21,14 @@ pipeline {
         
         stage('Test Deployment') {
             steps {
-                script {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                     sh 'kubectl get pods'
                     sh 'kubectl get services'
                 }
             }
         }
     }
-
+    
     post {
         always {
             echo 'Pipeline finished.'
