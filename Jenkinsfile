@@ -12,6 +12,24 @@ pipeline {
                 }
             }
         }
+        
+        stage('Build and Deploy') {
+            steps {
+                script {
+                    sh 'kubectl apply -f frontend/frontend-deployment.yaml'
+                    sh 'kubectl apply -f backend/backend-deployment.yaml'
+                }
+            }
+        }
+        
+        stage('Test Deployment') {
+            steps {
+                script {
+                    sh 'kubectl get pods'
+                    sh 'kubectl get services'
+                }
+            }
+        }
     }
 
     post {

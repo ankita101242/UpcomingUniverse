@@ -19,7 +19,7 @@ spec:
         - containerPort: 4000
         env:
         - name: DATABASE_URL
-          value: "http://database-service:5432"
+          value: "mysql://user:password@mysql-service:3306/UU"
 ---
 apiVersion: v1
 kind: Service
