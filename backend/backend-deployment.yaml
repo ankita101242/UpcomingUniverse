@@ -16,10 +16,26 @@ spec:
       - name: backend
         image: ankitaagrawal12/backend:latest
         ports:
-        - containerPort: 4000
+        - containerPort: 9696
         env:
-        - name: DATABASE_URL
-          value: "mysql://user:password@mysql-service:3306/UU"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://mysql-service:3306/UU"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "root"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "root"
+        - name: SPRING_DATASOURCE_DRIVER-CLASS-NAME
+          value: "com.mysql.cj.jdbc.Driver"
+        - name: SPRING_JPA_HIBERNATE_DDL-AUTO
+          value: "update"
+        - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+          value: "org.hibernate.dialect.MySQL8Dialect"
+        - name: SPRING_JPA_SHOW-SQL
+          value: "true"
+        - name: SPRING_JPA_OPEN-IN-VIEW
+          value: "false"
+        - name: SERVER_ERROR_INCLUDE-BINDING-ERRORS
+          value: "always"
 ---
 apiVersion: v1
 kind: Service
@@ -28,8 +44,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 4000
-    targetPort: 4000
+  - port: 9696
+    targetPort: 9696
   selector:
     app: backend
 
